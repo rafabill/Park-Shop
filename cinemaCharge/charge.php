@@ -1,0 +1,36 @@
+<?php
+$servername = "localhost:3307";
+$username = "root";
+$password = "";
+$db = 'park';
+$product = $_POST['product'];
+$ID = $_POST['ID'];
+$amount = $_POST['amount'];
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $db);
+
+// Check connection
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+echo "Connected successfully";
+$sql = "INSERT INTO cinema_tickets_copy1_has_visitor_card (cinema_tickets_copy1_idcinema_tickets, visitor_card_idvisitor_card, visitor_card_euro_charge) VALUES ('$product', '$ID', '$amount')";
+
+if (mysqli_query($conn, $sql)) {
+     echo "\n <br>New record created successfully";
+} else {
+     echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+}
+$sql = "SELECT euro_charge FROM visitor_card WHERE idvisitor_card='$ID'";
+$getBalance = mysqli_query($conn, $sql);
+$balance = $getBalance->fetch_column();
+$sql = "UPDATE visitor_card SET euro_charge = $balance - $amount WHERE idvisitor_card = $ID";
+if (mysqli_query($conn, $sql)) {
+     echo "\n <br>charged successfully";
+} else {
+          echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+}
+
+mysqli_close($conn);
+?>
